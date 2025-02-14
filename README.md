@@ -14,10 +14,8 @@ git clone git@github.com:kerstinlovisa/EXOnanoAOD.git
 scram b -j
 ```
 
-# Template
-You find a very simple template with a producer in ´plugins´ and python customization script in ´python´, in the branch `EXOnanoAOD_template`. 
-
-Or you can use the producers already implemented in main for reference.
+# Setup
+Please include your customizations as python scripts under `python`, and if you need a custom producer add it under `plugins`.
 
 # Test run AOD -> EXOnanoAOD for Run 3
 In `test` there is a test config file for Run 3 2023 which runs over one MC file (from TTto2L2Nu dataset). It will run AOD to NanoAOD format directly. 
@@ -33,4 +31,9 @@ Check the event size of your custom EXOnanoAOD implementations in your nanoAOD r
 git cms-add
 $CMSSW_BASE/src/PhysicsTools/NanoAOD/test/inspectNanoFile.py nanoAOD.root --size size.html
 ```
+
+# Template
+You find a very simple template with a producer in ´plugins´ and python customization script in ´python´, in the branch `EXOnanoAOD_template`. 
+
+Or you can use the producers already implemented in main for reference.
 
