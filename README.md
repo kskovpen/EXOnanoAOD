@@ -17,7 +17,7 @@ scram b -j
 # Template
 You find a very simple template with a producer in ´plugins´ and python customization script in ´python´, in the branch `EXOnanoAOD_template`. 
 
-Another example with more producers from LLPnanoAOD is found in the branch `EXOnanoAOD_LLPnanoAOD` that you could sue for reference.
+Or you can use the producers already implemented in main for reference.
 
 # Test run AOD -> EXOnanoAOD for Run 3
 In `test` there is a test config file for Run 3 2023 which runs over one MC file (from TTto2L2Nu dataset). It will run AOD to NanoAOD format directly. 
