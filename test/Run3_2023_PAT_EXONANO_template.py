@@ -150,9 +150,9 @@ from PhysicsTools.PatAlgos.slimming.miniAOD_tools import miniAOD_customizeAllMC
 process = miniAOD_customizeAllMC(process)
 
 # EXOnanoAOD customisation
-from PhysicsTools.EXOnanoAOD.custom_beamspot_cff.py import *
-from PhysicsTools.EXOnanoAOD.custom_dsamuon_cff.py import *
-from PhysicsTools.EXOnanoAOD.custom_genpartExtended_cff.py import *
+from PhysicsTools.EXOnanoAOD.custom_beamspot_cff import *
+from PhysicsTools.EXOnanoAOD.custom_dsamuon_cff import *
+from PhysicsTools.EXOnanoAOD.custom_genpartExtended_cff import *
 
 # Replace template with customization
 process = add_beamspotTables(process)
