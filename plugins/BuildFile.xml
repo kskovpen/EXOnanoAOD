@@ -1,7 +1,15 @@
+<use name="DataFormats/L1TGlobal"/>
 <use name="DataFormats/NanoAOD"/>
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/PluginManager"/>
+<use name="Geometry/Records"/>
+<use name="Geometry/TrackerGeometryBuilder"/>
+<use name="MagneticField/Records"/>
+<use name="PhysicsTools/RecoUtils"/>
+<use name="RecoVertex/KalmanVertexFit"/>
+<use name="TrackingTools/Records"/>
+<use name="TrackingTools/IPTools"/>
 <flags EDM_PLUGIN="1"/>
 <export>
   <lib name="1"/>
