@@ -38,9 +38,3 @@ Check the event size of your custom EXOnanoAOD implementations in your nanoAOD r
 git cms-add
 $CMSSW_BASE/src/PhysicsTools/NanoAOD/test/inspectNanoFile.py nanoAOD.root --size size.html
 ```
-
-# Template
-You find a very simple template with a producer in ´plugins´ and python customization script in ´python´, in the branch `EXOnanoAOD_template`. 
-
-Or you can use the producers already implemented in main for reference.
-
