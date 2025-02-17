@@ -17,10 +17,17 @@ scram b -j
 # Setup
 Please include your customizations as python scripts under `python`, and if you need a custom producer add it under `plugins`.
 
+We advice to use the templates in the branch `EXOnanoAOD_template` as base and create a new branch from there. 
+```
+git checkout EXOnanoAOD_temple
+git checkout -b your_branch_name
+```
+Rename the plugin in `plugins/EXOnanoAODProducerTemplate.cc` and python script in `python/custom_exonanoaod_template_cff.py`, and fill them in for your customizations. Edit the test script in `test/Run3_2023_PAT_EXONANO_template.py` to include your customizations under `# EXOnanoAOD customisation`. 
+
 # Test run AOD -> EXOnanoAOD for Run 3
 In `test` there is a test config file for Run 3 2023 which runs over one MC file (from TTto2L2Nu dataset). It will run AOD to NanoAOD format directly. 
 
-Add your customization functions at the end of the script under `EXOnanoAOD customisation`. If you included everything you need (also updating your `BuildFile.xml` if needed) you should be able to run your customizations with:
+After adding your customization functions at the end of the script under `# EXOnanoAOD customisation` you should be able to run your customizations with:
 ```
 cmsRun Run3_2023_PAT_EXONANO_template.py
 ```
