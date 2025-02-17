@@ -19,7 +19,7 @@ Please include your customizations as python scripts under `python`, and if you 
 
 We advice to use the templates in the branch `EXOnanoAOD_template` as base and create a new branch from there. 
 ```
-git checkout EXOnanoAOD_temple
+git checkout EXOnanoAOD_template
 git checkout -b your_branch_name
 ```
 Rename the plugin in `plugins/EXOnanoAODProducerTemplate.cc` and python script in `python/custom_exonanoaod_template_cff.py`, and fill them in for your customizations. Edit the test script in `test/Run3_2023_PAT_EXONANO_template.py` to include your customizations under `# EXOnanoAOD customisation`. 
