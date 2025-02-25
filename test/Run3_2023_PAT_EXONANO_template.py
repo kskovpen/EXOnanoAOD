@@ -153,11 +153,13 @@ process = miniAOD_customizeAllMC(process)
 from PhysicsTools.EXOnanoAOD.custom_beamspot_cff import *
 from PhysicsTools.EXOnanoAOD.custom_dsamuon_cff import *
 from PhysicsTools.EXOnanoAOD.custom_genpartExtended_cff import *
+from PhysicsTools.EXOnanoAOD.custom_electronvertex_cff import *
 
 # Replace template with customization
 process = add_beamspotTables(process)
 process = add_dsamuonTables(process)
 process = add_genpartTables(process)
+process = add_electronVertexTables(process)
 
 # End of customisation functions
 
