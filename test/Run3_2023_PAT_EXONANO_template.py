@@ -139,6 +139,10 @@ from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeCommon
 #call to customisation function nanoAOD_customizeCommon imported from PhysicsTools.NanoAOD.nano_cff
 process = nanoAOD_customizeCommon(process)
 
+# EXOnanoAOD customisations
+from PhysicsTools.EXOnanoAOD.custom_exo_cff import add_exonanoTables
+process = add_exonanoTables(process)
+
 # End of customisation functions
 
 # customisation of the process.
@@ -148,18 +152,6 @@ from PhysicsTools.PatAlgos.slimming.miniAOD_tools import miniAOD_customizeAllMC
 
 #call to customisation function miniAOD_customizeAllMC imported from PhysicsTools.PatAlgos.slimming.miniAOD_tools
 process = miniAOD_customizeAllMC(process)
-
-# EXOnanoAOD customisation
-from PhysicsTools.EXOnanoAOD.custom_beamspot_cff import *
-from PhysicsTools.EXOnanoAOD.custom_dsamuon_cff import *
-from PhysicsTools.EXOnanoAOD.custom_genpartExtended_cff import *
-from PhysicsTools.EXOnanoAOD.custom_electronvertex_cff import *
-
-# Replace template with customization
-process = add_beamspotTables(process)
-process = add_dsamuonTables(process)
-process = add_genpartTables(process)
-process = add_electronVertexTables(process)
 
 # End of customisation functions
 
