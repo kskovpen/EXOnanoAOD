@@ -62,7 +62,7 @@ class ElectronVertexTableProducer : public edm::global::EDProducer<> {
 
     static void fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
       edm::ParameterSetDescription desc;
-      desc.add<edm::InputTag>("electron")->setComment("input pat electron collection");
+      desc.add<edm::InputTag>("electrons")->setComment("input pat electrons collection");
       desc.add<edm::InputTag>("beamspot")->setComment("input beamspot collection");
       desc.add<edm::InputTag>("primaryVertex")->setComment("input primaryVertex collection");
       desc.add<edm::InputTag>("generalTracks")->setComment("input generalTracks collection");
@@ -176,6 +176,7 @@ void ElectronVertexTableProducer::produce(edm::StreamID, edm::Event& iEvent, con
       vxyzSigma.push_back(vxyz_.second);
       ndof.push_back(electronVertex.ndof());
       normChi2.push_back(electronVertex.normalizedChi2());
+      chi2.push_back(electronVertex.chi2());
       vx.push_back(electronVertex.x());
       vy.push_back(electronVertex.y());
       vz.push_back(electronVertex.z());
