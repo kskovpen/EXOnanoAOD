@@ -117,7 +117,6 @@ void ElectronVertexTableProducer::produce(edm::StreamID, edm::Event& iEvent, con
   edm::ESHandle<TransientTrackBuilder> builder = iSetup.getHandle(transientTrackBuilderToken_);
 
   KalmanVertexFitter vertexFitter(true);
-  vertexFitter.setTrackerBounds(740., 960.);
 
   int nElectronVertices = 0;
   int refittedTrackIdx_counter = 0;
