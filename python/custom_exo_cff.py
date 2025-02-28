@@ -60,6 +60,12 @@ PATmuonExtendedTable = cms.EDProducer("MuonExtendedTableProducer",
     generalTracks=cms.InputTag("generalTracks")
 )
 
+electronVertexTable = cms.EDProducer("ElectronVertexTableProducer",
+    electrons=cms.InputTag("linkedObjects","electrons"),
+    beamspot=cms.InputTag("offlineBeamSpot"),
+    generalTracks=cms.InputTag("generalTracks"),
+    primaryVertex=cms.InputTag("offlineSlimmedPrimaryVertices")
+)
 
 def add_mdsTables(process):
     process.ca4CSCrechitClusters = cscRechitClusterProducer    
@@ -94,18 +100,34 @@ def add_dsamuonTables(process):
 
     return process
 
+def add_electronVertexTables(process):
+
+    process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+    process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
+
+    process.electronVertexTable = electronVertexTable
+    process.electronVertexTask = cms.Task(process.electronVertexTable)
+    process.nanoTableTaskCommon.add(process.electronVertexTask)
+
+    return process
+
 def update_genParticleTable(process):
 
     process.genParticleTable.variables.vx = Var("vx",float, doc = "gen particle production vertex x coordinate (cm)", precision=8)
     process.genParticleTable.variables.vy = Var("vy",float, doc = "gen particle production vertex y coordinate (cm)", precision=8)
     process.genParticleTable.variables.vz = Var("vz",float, doc = "gen particle production vertex z coordinate (cm)", precision=8)
 
+    process.genParticleTable.variables.px = Var("px",float, doc = "gen particle momentum x coordinate", precision=8)
+    process.genParticleTable.variables.py = Var("py",float, doc = "gen particle momentum y coordinate", precision=8)
+    process.genParticleTable.variables.pz = Var("pz",float, doc = "gen particle momentum z coordinate", precision=8)
+
     return process
 
 def add_exonanoTables(process):
 
-    process = add_mdsTables(process)
+    # process = add_mdsTables(process) ## Commented out right now because it needs changes in PhysicsTools/NanoAOD
     process = add_dsamuonTables(process)
+    process = add_electronVertexTables(process)
     process = update_genParticleTable(process)
 
     return process

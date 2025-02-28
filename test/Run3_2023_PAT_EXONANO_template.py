@@ -139,8 +139,10 @@ from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeCommon
 #call to customisation function nanoAOD_customizeCommon imported from PhysicsTools.NanoAOD.nano_cff
 process = nanoAOD_customizeCommon(process)
 
+# EXOnanoAOD customisations
 from PhysicsTools.EXOnanoAOD.custom_exo_cff import add_exonanoTables
 process = add_exonanoTables(process)
+
 # End of customisation functions
 
 # customisation of the process.
@@ -150,7 +152,6 @@ from PhysicsTools.PatAlgos.slimming.miniAOD_tools import miniAOD_customizeAllMC
 
 #call to customisation function miniAOD_customizeAllMC imported from PhysicsTools.PatAlgos.slimming.miniAOD_tools
 process = miniAOD_customizeAllMC(process)
-
 
 # End of customisation functions
 
