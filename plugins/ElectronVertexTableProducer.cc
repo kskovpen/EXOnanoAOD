@@ -23,6 +23,15 @@
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 
+#include "RecoVertex/KinematicFitPrimitives/interface/ParticleMass.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/MultiTrackKinematicConstraint.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "RecoVertex/KinematicFit/interface/KinematicConstrainedVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/TwoTrackMassKinematicConstraint.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
+#include "RecoVertex/KinematicFit/interface/MassKinematicConstraint.h"
+
 #include "TrackingTools/Records/interface/TrackingComponentsRecord.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
@@ -131,7 +140,7 @@ void ElectronVertexTableProducer::produce(edm::StreamID, edm::Event& iEvent, con
   std::vector<float> refittedTrackEta,refittedTrackEtaErr,refittedTrackPhi,refittedTrackPhiErr,refittedTrackCharge,refittedTrackNormChi2,refittedTrackNdof,refittedTrackChi2;
   std::vector<float> refittedTrackDzPV,refittedTrackDzPVErr,refittedTrackDxyPVTraj,refittedTrackDxyPVTrajErr,refittedTrackDxyPVSigned,refittedTrackDxyPVSignedErr,refittedTrackIp3DPVSigned,refittedTrackIp3DPVSignedErr;
   std::vector<float> refittedTrackDxyBS,refittedTrackDxyBSErr,refittedTrackDzBS,refittedTrackDzBSErr,refittedTrackDxyBSTraj,refittedTrackDxyBSTrajErr,refittedTrackDxyBSSigned,refittedTrackDxyBSSignedErr,refittedTrackIp3DBSSigned,refittedTrackIp3DBSSignedErr;
-  
+  std::vector<float> refittedVertMass,refittedVertPt,refittedVertEta,refittedVertPhi; 
   // pat electrons
   for(size_t i = 0; i < electronHandle->size(); i++){
 
@@ -287,8 +296,36 @@ void ElectronVertexTableProducer::produce(edm::StreamID, edm::Event& iEvent, con
       refittedTrackIdx.push_back(refittedTrackIdx_counter);
       refittedTrackIdx2.push_back(refittedTrackIdx_counter);
       refittedTrackIdx_counter++;
+
+      // Perform kinematic fit to re-compute dielectron four-momentum (especially for better mass resolution)
+      KinematicParticleFactoryFromTransientTrack pFactory;
+      ParticleMass e_mass = 0.000511;
+      float e_sigma = 0.00000001;
+      float chi = 0.;
+      float ndf = 0.;
+      std::vector<RefCountedKinematicParticle> eleParticles;
+      eleParticles.push_back(pFactory.particle(electronTransientTracks[0],e_mass,chi,ndf,e_sigma));
+      eleParticles.push_back(pFactory.particle(electronTransientTracks[1],e_mass,chi,ndf,e_sigma));
+      KinematicParticleVertexFitter fitter;
+      try {
+        RefCountedKinematicTree vertexFitTree = fitter.fit(eleParticles);
+        if (vertexFitTree->isValid()) {
+          vertexFitTree->movePointerToTheTop();
+          auto diele_part = vertexFitTree->currentParticle();
+          auto diele_state = diele_part->currentState();
+          auto daughters = vertexFitTree->daughterParticles();
+          refittedVertMass.push_back(diele_state.mass());
+          refittedVertPt.push_back(diele_state.globalMomentum().transverse());
+          refittedVertEta.push_back(diele_state.globalMomentum().eta());
+          refittedVertPhi.push_back(diele_state.globalMomentum().phi());
+        }
+      }
+      catch (std::exception ex) {
+	  std::cout << "kinematic vertex fit failed!" << std::endl;
+      }
     }
   }
+
   auto vertexTab = std::make_unique<nanoaod::FlatTable>(nElectronVertices, "ElectronVertex", false, false);
   auto refittedTracksTab = std::make_unique<nanoaod::FlatTable>(nElectronVertices*2, "ElectronVertexRefittedTracks", false, false);
 
@@ -322,6 +359,10 @@ void ElectronVertexTableProducer::produce(edm::StreamID, edm::Event& iEvent, con
   vertexTab->addColumn<float>("missHitsAfterVert2", missHitsAfterVert2, "");
   vertexTab->addColumn<float>("refittedTrackIdx1", refittedTrackIdx1, "");
   vertexTab->addColumn<float>("refittedTrackIdx2", refittedTrackIdx2, "");
+  vertexTab->addColumn<float>("massRefit", refittedVertMass, "");
+  vertexTab->addColumn<float>("ptRefit", refittedVertPt, "");
+  vertexTab->addColumn<float>("etaRefit", refittedVertEta, "");
+  vertexTab->addColumn<float>("phiRefit", refittedVertPhi, "");
 
   iEvent.put(std::move(vertexTab), "ElectronVertex");
 
