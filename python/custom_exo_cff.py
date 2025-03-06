@@ -111,18 +111,6 @@ def add_electronVertexTables(process):
 
     return process
 
-def update_beamSpotTable(process):
-    # WIP: can we add these similarly?
-    #ndof.push_back(beamSpotVertex.ndof());
-    #chi2.push_back(beamSpotVertex.normalizedChi2());
-    #ntracks.push_back(beamSpotVertex.nTracks());
-
-    #extend 3D beamspot for exo
-    process.beamSpotTable.variables.x =  Var("position().x()",float,doc="BeamSpot center, x coordinate (cm)",precision=-1)
-    process.beamSpotTable.variables.y =  Var("position().y()",float,doc="BeamSpot center, y coordinate (cm)",precision=-1)
-
-    return process
-
 def update_genParticleTable(process):
 
     process.genParticleTable.variables.vx = Var("vx",float, doc = "gen particle production vertex x coordinate (cm)", precision=8)
@@ -140,7 +128,6 @@ def add_exonanoTables(process):
     # process = add_mdsTables(process) ## Commented out right now because it needs changes in PhysicsTools/NanoAOD
     process = add_dsamuonTables(process)
     process = add_electronVertexTables(process)
-    process = update_beamSpotTable(process)
     process = update_genParticleTable(process)
 
     return process

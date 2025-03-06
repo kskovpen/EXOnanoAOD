@@ -13,6 +13,14 @@ cd PhysicsTools
 git clone git@github.com:kerstinlovisa/EXOnanoAOD.git
 scram b -j
 ```
+## Enable MDSnano tables
+Before EXOnanoAOD is integrated into cmssw, we need the following commit to include the simple table to produce new data-type
+```
+git remote add kakwok git@github.com:kakwok/cmssw.git 
+git cms-addpkg PhysicsTools/NanoAOD
+git cherry-pick fb5f0b9 
+```
+Then un-comment the line in `custom_exo_cff.py`
 
 # Setup
 Please include your customizations as python scripts under `python`, and if you need a custom producer add it under `plugins`.
