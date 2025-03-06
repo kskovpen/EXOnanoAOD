@@ -132,3 +132,8 @@ def add_exonanoTables(process):
 
     return process
 
+def add_exonanoMCTables(process):
+
+    process = update_genParticleTable(process)
+
+    return process
