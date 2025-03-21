@@ -67,6 +67,30 @@ electronVertexTable = cms.EDProducer("ElectronVertexTableProducer",
     primaryVertex=cms.InputTag("offlineSlimmedPrimaryVertices")
 )
 
+dispJetTable = cms.EDProducer("DispJetTableProducer",
+    rho=cms.InputTag("fixedGridRhoFastjetAll"),
+    electrons=cms.InputTag("linkedObjects","electrons"),
+    muons=cms.InputTag("linkedObjects","muons"),
+    jets=cms.InputTag("linkedObjects","jets"),
+    jetsFat=cms.InputTag("slimmedJetsAK8"),
+    jetsSub=cms.InputTag("slimmedJetsAK8PFPuppiSoftDropPacked", "SubJets"),
+    primaryVertex = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    secondaryVertex = cms.InputTag("displacedInclusiveSecondaryVertices")
+)
+
+def add_dispJetTables(process):
+    process.load('PhysicsTools.EXOnanoAOD.displacedInclusiveVertexing_cff')
+    process.dispJetTable = dispJetTable
+    process.dispJetTask = cms.Task(process.unpackedTracksAndVertices)
+    process.dispJetTask.add(process.displacedInclusiveVertexFinder)
+    process.dispJetTask.add(process.displacedVertexMerger)
+    process.dispJetTask.add(process.displacedTrackVertexArbitrator)
+    process.dispJetTask.add(process.displacedInclusiveSecondaryVertices)
+    process.dispJetTask.add(process.dispJetTable)
+    process.nanoTableTaskCommon.add(process.dispJetTask)
+
+    return process
+
 def add_mdsTables(process):
     process.ca4CSCrechitClusters = cscRechitClusterProducer    
     process.ca4DTrechitClusters = dtRechitClusterProducer
@@ -126,8 +150,9 @@ def update_genParticleTable(process):
 def add_exonanoTables(process):
 
     # process = add_mdsTables(process) ## Commented out right now because it needs changes in PhysicsTools/NanoAOD
-    process = add_dsamuonTables(process)
-    process = add_electronVertexTables(process)
+#    process = add_dsamuonTables(process)
+#    process = add_electronVertexTables(process)
+    process = add_dispJetTables(process)
     process = update_genParticleTable(process)
 
     return process
