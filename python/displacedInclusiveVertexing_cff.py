@@ -1,15 +1,24 @@
 import FWCore.ParameterSet.Config as cms
 
+runWithJetMatching = True
+
 unpackedTracksAndVertices = cms.EDProducer('PATTrackAndVertexUnpacker',
                                            slimmedVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                            slimmedSecondaryVertices = cms.InputTag("slimmedSecondaryVertices"),
                                            additionalTracks= cms.InputTag("lostTracks"),
                                            packedCandidates = cms.InputTag("packedPFCandidates"))
-    
+
+tracksInJets = cms.EDProducer("JetTrackFilter",
+                              tracks = cms.InputTag("unpackedTracksAndVertices"),
+                              jets = cms.InputTag("slimmedJets"),
+                              coneSize = cms.double(0.4))
+
+ivfTrackSrc = cms.InputTag("tracksInJets") if runWithJetMatching else cms.InputTag("unpackedTracksAndVertices")
+
 displacedInclusiveVertexFinder  = cms.EDProducer("InclusiveVertexFinder",
                                                  beamSpot = cms.InputTag("offlineBeamSpot"),
                                                  primaryVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-                                                 tracks = cms.InputTag("unpackedTracksAndVertices"),
+                                                 tracks = ivfTrackSrc,
                                                  minHits = cms.uint32(6), #old 8 -> 0 AOD produciton has problems with nhits
                                                  maximumLongitudinalImpactParameter = cms.double(20), #old  .3 -> infty
                                                  minPt = cms.double(0.8), #old .8 -> 1
@@ -18,8 +27,8 @@ displacedInclusiveVertexFinder  = cms.EDProducer("InclusiveVertexFinder",
                                                  clusterizer = cms.PSet(
                                                      seedMax3DIPSignificance = cms.double(9999.),
                                                      seedMax3DIPValue = cms.double(9999.),
-                                                     seedMin3DIPSignificance = cms.double(1.2),
-                                                     seedMin3DIPValue = cms.double(0.005),
+                                                     seedMin3DIPSignificance = cms.double(0.0 if runWithJetMatching else 1.2),
+                                                     seedMin3DIPValue = cms.double(0.0 if runWithJetMatching else 0.005),
                                                      clusterMaxDistance = cms.double(0.4), #500um #old .05 -> 1
                                                      clusterMaxSignificance = cms.double(4.5), #4.5 sigma  #old  4.5 ---> infty
                                                      distanceRatio = cms.double(20), # was cluster scale = 1 / density factor =0.05
@@ -49,7 +58,7 @@ displacedVertexMerger = cms.EDProducer("VertexMerger",
 displacedTrackVertexArbitrator = cms.EDProducer("TrackVertexArbitrator",
                                                 beamSpot = cms.InputTag("offlineBeamSpot"),
                                                 primaryVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-                                                tracks = cms.InputTag("unpackedTracksAndVertices"),
+                                                tracks = ivfTrackSrc,
                                                 secondaryVertices = cms.InputTag("displacedVertexMerger"),
                                                 dLenFraction = cms.double(0.333), #old .333 -> .2
                                                 dRCut = cms.double(1), # old .4 -> 1   me 3
@@ -68,4 +77,7 @@ displacedInclusiveSecondaryVertices.secondaryVertices = cms.InputTag("displacedT
 displacedInclusiveSecondaryVertices.maxFraction = 0.2 #0.05 #old .2 -> .05
 displacedInclusiveSecondaryVertices.minSignificance = 10
     
-displacedInclusiveVertexing = cms.Sequence(unpackedTracksAndVertices * displacedInclusiveVertexFinder  * displacedVertexMerger * displacedTrackVertexArbitrator * displacedInclusiveSecondaryVertices)
+if runWithJetMatching:
+    displacedInclusiveVertexing = cms.Sequence(unpackedTracksAndVertices * tracksInJets * displacedInclusiveVertexFinder * displacedVertexMerger * displacedTrackVertexArbitrator * displacedInclusiveSecondaryVertices)
+else:
+    displacedInclusiveVertexing = cms.Sequence(unpackedTracksAndVertices * displacedInclusiveVertexFinder * displacedVertexMerger * displacedTrackVertexArbitrator * displacedInclusiveSecondaryVertices)
