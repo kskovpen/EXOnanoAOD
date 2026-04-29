@@ -105,7 +105,11 @@ process.dispJetTable = cms.EDProducer("DispJetTableProducer",
     secondaryVertex = cms.InputTag("displacedInclusiveSecondaryVertices")
 )
 process.nanoAOD_step = cms.Path(process.nanoSequenceMC)
-    
+
+process.genPartExtendedTable = cms.EDProducer("GenParticlesExtendedTableProducer",
+                                              genparticles = cms.InputTag("finalGenParticles")
+)
+process.nanoAOD_step += process.genPartExtendedTable
 process.nanoAOD_step += process.displacedInclusiveVertexing
 process.nanoAOD_step += process.dispJetTable
 
