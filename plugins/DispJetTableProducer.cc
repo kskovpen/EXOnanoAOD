@@ -90,6 +90,11 @@ protected:
    std::vector<float> mu_trackPt, mu_trackPtErr;
    
    std::vector<float> mu_dxy, mu_dz, mu_3dIP, mu_3dIPSig;   
+
+   std::vector<int> vtx_df, vtx_ntracks;
+   std::vector<float> vtx_x, vtx_y, vtx_z, vtx_cx, vtx_cy, vtx_cz, vtx_chi2, vtx_pt, vtx_eta, vtx_phi, vtx_E, vtx_mass;
+   std::vector<int> vtx_trackcharge, vtx_trackvtxid;
+   std::vector<float> vtx_trackpt, vtx_tracketa, vtx_trackphi, vtx_trackE, vtx_trackdxy, vtx_trackdz;
   
 public:
   DispJetTableProducer(edm::ParameterSet const& params)
@@ -106,6 +111,8 @@ public:
 	produces<nanoaod::FlatTable>("DispJetMuon");
 	produces<nanoaod::FlatTable>("DispJetMuonVtx");
 	produces<nanoaod::FlatTable>("DispJetMuonTrk");
+	produces<nanoaod::FlatTable>("DispVtx");
+	produces<nanoaod::FlatTable>("DispVtxTracks");
      }   
 
   ~DispJetTableProducer() override {}
@@ -173,6 +180,12 @@ public:
      mu_trackPt.clear(); mu_trackPtErr.clear();
      
      mu_dxy.clear(); mu_dz.clear(); mu_3dIP.clear(); mu_3dIPSig.clear();
+
+     vtx_df.clear(); vtx_ntracks.clear();
+     vtx_x.clear(); vtx_y.clear(); vtx_z.clear(); vtx_cx.clear(); vtx_cy.clear(); vtx_cz.clear(); vtx_chi2.clear(); vtx_pt.clear(); vtx_eta.clear(); vtx_phi.clear(); vtx_E.clear(); vtx_mass.clear();
+     
+     vtx_trackcharge.clear(); vtx_trackvtxid.clear();
+     vtx_trackpt.clear(); vtx_tracketa.clear(); vtx_trackphi.clear(); vtx_trackE.clear(); vtx_trackdxy.clear(); vtx_trackdz.clear();
      
      int ntrack_max = 100;
      int nElectronsSel = 0;
@@ -377,6 +390,39 @@ public:
 	}      
 	nMuonsSel += 1;
      }
+
+     int nVtx = 0;
+     for(const reco::Vertex& vtx : secVertices) {
+       
+       vtx_x.push_back(vtx.x());
+       vtx_y.push_back(vtx.y());
+       vtx_z.push_back(vtx.z());
+       vtx_cx.push_back(vtx.xError());
+       vtx_cy.push_back(vtx.yError());
+       vtx_cz.push_back(vtx.zError());
+       vtx_df.push_back(vtx.ndof());
+       vtx_chi2.push_back(vtx.chi2());
+       vtx_pt.push_back(vtx.p4().pt());
+       vtx_eta.push_back(vtx.p4().eta());
+       vtx_phi.push_back(vtx.p4().phi());
+       vtx_E.push_back(vtx.p4().energy());
+       vtx_mass.push_back(vtx.p4().mass());
+	      
+       vtx_ntracks.push_back(0);
+       for(reco::Vertex::trackRef_iterator vtxTrackref = vtx.tracks_begin(); vtxTrackref != vtx.tracks_end(); vtxTrackref++) {
+	 if(vtx_ntracks.back() == ntrack_max) break;
+	 reco::TrackRef vtxTrack = vtxTrackref->castTo<reco::TrackRef>();
+	 vtx_trackpt.push_back(vtxTrack->pt());
+	 vtx_tracketa.push_back(vtxTrack->eta());
+	 vtx_trackphi.push_back(vtxTrack->phi());
+	 vtx_trackE.push_back(vtxTrack->p());
+	 vtx_trackcharge.push_back(vtxTrack->charge());
+	 vtx_trackdxy.push_back(std::abs(vtxTrack->dxy(pv.position())));
+	 vtx_trackdz.push_back(std::abs(vtxTrack->dz(pv.position())));
+	 vtx_trackvtxid.push_back(nVtx);
+	 vtx_ntracks.back()++;
+       }
+     }
      
      auto dispJetElectronTab = std::make_unique<nanoaod::FlatTable>(nElectronsSel, "DispJetElectron", false, false);
      auto dispJetMuonTab = std::make_unique<nanoaod::FlatTable>(nMuonsSel, "DispJetMuon", false, false);
@@ -499,6 +545,36 @@ public:
      dispJetMuonTrkTab->addColumn<float>("IVF_trackdz", mu_IVF_trackdz, "");
      dispJetMuonTrkTab->addColumn<int>("IVF_trackmuid", mu_IVF_trackmuid, "");
      dispJetMuonTrkTab->addColumn<int>("IVF_trackvtxid", mu_IVF_trackvtxid, "");
+
+     auto dispVtxTab = std::make_unique<nanoaod::FlatTable>(vtx_x.size(), "DispVtx", false, false);
+     dispVtxTab->addColumn<int>("vtx_df", vtx_df, "");
+     dispVtxTab->addColumn<int>("vtx_ntracks", vtx_ntracks, "");
+     dispVtxTab->addColumn<float>("vtx_x", vtx_x, "");
+     dispVtxTab->addColumn<float>("vtx_y", vtx_y, "");
+     dispVtxTab->addColumn<float>("vtx_z", vtx_z, "");
+     dispVtxTab->addColumn<float>("vtx_cx", vtx_cx, "");
+     dispVtxTab->addColumn<float>("vtx_cy", vtx_cy, "");
+     dispVtxTab->addColumn<float>("vtx_cz", vtx_cz, "");
+     dispVtxTab->addColumn<float>("vtx_chi2", vtx_chi2, "");
+     dispVtxTab->addColumn<float>("vtx_pt", vtx_pt, "");
+     dispVtxTab->addColumn<float>("vtx_eta", vtx_eta, "");
+     dispVtxTab->addColumn<float>("vtx_phi", vtx_phi, "");
+     dispVtxTab->addColumn<float>("vtx_E", vtx_E, "");
+     dispVtxTab->addColumn<float>("vtx_mass", vtx_mass, "");   
+     
+     int nDispVtxTracks = 0;
+     for( unsigned int iv=0;iv<vtx_ntracks.size();iv++ ) {
+	nDispVtxTracks += std::min(vtx_ntracks[iv], ntrack_max);
+     }
+     auto dispVtxTracksTab = std::make_unique<nanoaod::FlatTable>(nDispVtxTracks, "DispVtxTracks", false, false);
+     dispVtxTracksTab->addColumn<int>("vtx_trackcharge", vtx_trackcharge, "");
+     dispVtxTracksTab->addColumn<float>("vtx_trackpt", vtx_trackpt, "");
+     dispVtxTracksTab->addColumn<float>("vtx_tracketa", vtx_tracketa, "");
+     dispVtxTracksTab->addColumn<float>("vtx_trackphi", vtx_trackphi, "");
+     dispVtxTracksTab->addColumn<float>("vtx_trackE", vtx_trackE, "");
+     dispVtxTracksTab->addColumn<float>("vtx_trackdxy", vtx_trackdxy, "");
+     dispVtxTracksTab->addColumn<float>("vtx_trackdz", vtx_trackdz, "");
+     dispVtxTracksTab->addColumn<int>("vtx_trackvtxid", vtx_trackvtxid, "");     
      
      iEvent.put(std::move(dispJetElectronTab), "DispJetElectron");
      iEvent.put(std::move(dispJetElectronVtxTab), "DispJetElectronVtx");
@@ -506,6 +582,8 @@ public:
      iEvent.put(std::move(dispJetMuonTab), "DispJetMuon");
      iEvent.put(std::move(dispJetMuonVtxTab), "DispJetMuonVtx");
      iEvent.put(std::move(dispJetMuonTrkTab), "DispJetMuonTrk");
+     iEvent.put(std::move(dispVtxTab), "DispVtx");
+     iEvent.put(std::move(dispVtxTracksTab), "DispVtxTracks");
   }      
 };
 
