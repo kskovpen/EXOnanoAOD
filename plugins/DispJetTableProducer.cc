@@ -221,7 +221,7 @@ public:
 	el_superClusterOverP.push_back(el.eSuperClusterOverP());
 	el_ecalEnergy.push_back(el.ecalEnergy());
 	el_dEtaInSeed.push_back(std::abs(dEtaInSeed(&el)));
-	el_numberInnerHitsMissing.push_back(el.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS));
+	el_numberInnerHitsMissing.push_back((!el.gsfTrack().isNull())? el.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS): 0);
 	el_numberOfValidPixelHits.push_back((!el.gsfTrack().isNull())? el.gsfTrack()->hitPattern().numberOfValidPixelHits() : 0);
 	el_numberOfValidTrackerHits.push_back((!el.gsfTrack().isNull())? el.gsfTrack()->hitPattern().numberOfValidTrackerHits() : 0);
 	
@@ -318,13 +318,13 @@ public:
 	mu_numberOfMatchedStation.push_back(mu.numberOfMatchedStations());
 	mu_numberOfValidPixelHits.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->hitPattern().numberOfValidPixelHits() : 0);
 	mu_numberOfValidTrackerHits.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->hitPattern().numberOfValidTrackerHits() : 0);
-	mu_numberInnerHitsMissing.push_back(mu.innerTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS));
+	mu_numberInnerHitsMissing.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) : 0);
 	mu_trackerLayersWithMeasurement.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() : 0);
 	mu_numberInnerHits.push_back((!mu.globalTrack().isNull()) ? mu.globalTrack()->hitPattern().numberOfValidMuonHits() : (!mu.outerTrack().isNull() ? mu.outerTrack()->hitPattern().numberOfValidMuonHits() : 0));
 	
 	mu_relIso0p4.push_back(getPFIso(mu));
-	mu_trackPt.push_back(mu.innerTrack()->pt());
-	mu_trackPtErr.push_back(mu.innerTrack()->ptError());
+	mu_trackPt.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->pt() : 0);
+	mu_trackPtErr.push_back((!mu.innerTrack().isNull()) ? mu.innerTrack()->ptError() : 0);
 	
 	mu_dxy.push_back(mu.dB(pat::Muon::PV2D));
 	mu_dz.push_back(mu.dB(pat::Muon::PVDZ));
