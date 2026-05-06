@@ -73,7 +73,7 @@ protected:
    std::vector<float> el_relIso0p4;
    std::vector<float> el_sigmaIetaIeta, el_deltaPhiSuperClusterTrack, el_deltaEtaSuperClusterTrack, el_eInvMinusPInv, el_hOverE;
    
-   std::vector<float> el_dxy, el_dz, el_3dIP, el_3dIPSig;
+   std::vector<float> el_dxy, el_dz, el_IP3d, el_IP3dSig;
    
    std::vector<int> mu_idx;
    std::vector<bool> mu_lIVF_match;
@@ -89,7 +89,7 @@ protected:
    std::vector<float> mu_relIso0p4;
    std::vector<float> mu_trackPt, mu_trackPtErr;
    
-   std::vector<float> mu_dxy, mu_dz, mu_3dIP, mu_3dIPSig;   
+   std::vector<float> mu_dxy, mu_dz, mu_IP3d, mu_IP3dSig;   
 
    std::vector<int> vtx_df, vtx_ntracks;
    std::vector<float> vtx_x, vtx_y, vtx_z, vtx_cx, vtx_cy, vtx_cz, vtx_chi2, vtx_pt, vtx_eta, vtx_phi, vtx_E, vtx_mass;
@@ -163,7 +163,7 @@ public:
      el_relIso0p4.clear();
      el_sigmaIetaIeta.clear(); el_deltaPhiSuperClusterTrack.clear(); el_deltaEtaSuperClusterTrack.clear(); el_eInvMinusPInv.clear(); el_hOverE.clear();
      
-     el_dxy.clear(); el_dz.clear(); el_3dIP.clear(); el_3dIPSig.clear();
+     el_dxy.clear(); el_dz.clear(); el_IP3d.clear(); el_IP3dSig.clear();
      
      mu_idx.clear();
      mu_lIVF_match.clear();
@@ -179,7 +179,7 @@ public:
      mu_relIso0p4.clear();
      mu_trackPt.clear(); mu_trackPtErr.clear();
      
-     mu_dxy.clear(); mu_dz.clear(); mu_3dIP.clear(); mu_3dIPSig.clear();
+     mu_dxy.clear(); mu_dz.clear(); mu_IP3d.clear(); mu_IP3dSig.clear();
 
      vtx_df.clear(); vtx_ntracks.clear();
      vtx_x.clear(); vtx_y.clear(); vtx_z.clear(); vtx_cx.clear(); vtx_cy.clear(); vtx_cz.clear(); vtx_chi2.clear(); vtx_pt.clear(); vtx_eta.clear(); vtx_phi.clear(); vtx_E.clear(); vtx_mass.clear();
@@ -234,8 +234,8 @@ public:
 	
 	el_dxy.push_back(el.dB(pat::Electron::PV2D));
 	el_dz.push_back(el.dB(pat::Electron::PVDZ));
-	el_3dIP.push_back(el.dB(pat::Electron::PV3D));
-	el_3dIPSig.push_back(fabs(el.dB(pat::Electron::PV3D)/el.edB(pat::Electron::PV3D)));
+	el_IP3d.push_back(el.dB(pat::Electron::PV3D));
+	el_IP3dSig.push_back(fabs(el.dB(pat::Electron::PV3D)/el.edB(pat::Electron::PV3D)));
 	
 	fillLeptonJetVariables(&el, NULL, jetHandle, pv, *rhoHandle, false);
 	
@@ -328,8 +328,8 @@ public:
 	
 	mu_dxy.push_back(mu.dB(pat::Muon::PV2D));
 	mu_dz.push_back(mu.dB(pat::Muon::PVDZ));
-	mu_3dIP.push_back(mu.dB(pat::Muon::PV3D));
-	mu_3dIPSig.push_back(fabs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)));
+	mu_IP3d.push_back(mu.dB(pat::Muon::PV3D));
+	mu_IP3dSig.push_back(fabs(mu.dB(pat::Muon::PV3D)/mu.edB(pat::Muon::PV3D)));
 	
 	fillLeptonJetVariables(NULL, &mu, jetHandle, pv, *rhoHandle, false);
 	
@@ -454,8 +454,8 @@ public:
      dispJetElectronTab->addColumn<float>("hOverE", el_hOverE, "");
      dispJetElectronTab->addColumn<float>("dxy", el_dxy, "");
      dispJetElectronTab->addColumn<float>("dz", el_dz, "");
-     dispJetElectronTab->addColumn<float>("3dIP", el_3dIP, "");
-     dispJetElectronTab->addColumn<float>("3dIPSig", el_3dIPSig, "");
+     dispJetElectronTab->addColumn<float>("IP3d", el_IP3d, "");
+     dispJetElectronTab->addColumn<float>("IP3dSig", el_IP3dSig, "");
      
      //     auto dispJetElectronVtxTab = std::make_unique<nanoaod::FlatTable>(el_IVF_x.size(), "DispJetElectronVtx", false, false);
      auto dispJetElectronVtxTab = std::make_unique<nanoaod::FlatTable>(el_IVF_x.size(), "ElectronVtx", false, false);
@@ -515,8 +515,8 @@ public:
      dispJetMuonTab->addColumn<float>("trackPtErr", mu_trackPtErr, "");
      dispJetMuonTab->addColumn<float>("dxy", mu_dxy, "");
      dispJetMuonTab->addColumn<float>("dz", mu_dz, "");
-     dispJetMuonTab->addColumn<float>("3dIP", mu_3dIP, "");
-     dispJetMuonTab->addColumn<float>("3dIPSig", mu_3dIPSig, "");
+     dispJetMuonTab->addColumn<float>("IP3d", mu_IP3d, "");
+     dispJetMuonTab->addColumn<float>("IP3dSig", mu_IP3dSig, "");
      
      //     auto dispJetMuonVtxTab = std::make_unique<nanoaod::FlatTable>(mu_IVF_x.size(), "DispJetMuonVtx", false, false);
      auto dispJetMuonVtxTab = std::make_unique<nanoaod::FlatTable>(mu_IVF_x.size(), "MuonVtx", false, false);
