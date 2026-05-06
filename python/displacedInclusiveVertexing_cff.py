@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-runWithJetMatching = True
+runWithJetMatching = False
 
 unpackedTracksAndVertices = cms.EDProducer('PATTrackAndVertexUnpacker',
                                            slimmedVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),

@@ -105,15 +105,15 @@ public:
      jetTag_(consumes<std::vector<pat::Jet>>(params.getParameter<edm::InputTag>("jets"))),
      vtxTag_(consumes<reco::VertexCollection>(params.getParameter<edm::InputTag>("primaryVertex"))),
      secVtxTag_(consumes<reco::VertexCollection>(params.getParameter<edm::InputTag>("secondaryVertex"))) {
-	produces<nanoaod::FlatTable>("DispJetElectron");
-	produces<nanoaod::FlatTable>("DispJetElectronVtx");
-	produces<nanoaod::FlatTable>("DispJetElectronTrk");
-	produces<nanoaod::FlatTable>("DispJetMuon");
-	produces<nanoaod::FlatTable>("DispJetMuonVtx");
-	produces<nanoaod::FlatTable>("DispJetMuonTrk");
-	produces<nanoaod::FlatTable>("DispVtx");
-	produces<nanoaod::FlatTable>("DispVtxTracks");
-     }   
+    produces<nanoaod::FlatTable>("DispJetElectron");
+    produces<nanoaod::FlatTable>("DispJetElectronVtx");
+    produces<nanoaod::FlatTable>("DispJetElectronTrk");
+    produces<nanoaod::FlatTable>("DispJetMuon");
+    produces<nanoaod::FlatTable>("DispJetMuonVtx");
+    produces<nanoaod::FlatTable>("DispJetMuonTrk");
+    produces<nanoaod::FlatTable>("DispVtx");
+    produces<nanoaod::FlatTable>("DispVtxTracks");
+  }   
 
   ~DispJetTableProducer() override {}
 
@@ -190,7 +190,7 @@ public:
      int ntrack_max = 100;
      int nElectronsSel = 0;
      int nMuonsSel = 0;
-     int nJetsSel = 0;
+     //     int nJetsSel = 0;
      
      for(unsigned int i = 0; i < nJets; i++) {
 	
@@ -201,9 +201,9 @@ public:
 	
 	const pat::Electron & el = (*electronHandle)[i];
 	
-	if(el.gsfTrack().isNull()) continue;
-	if(el.pt() < 7) continue;     
-	if(fabs(el.eta()) > 2.5) continue;
+	//	if(el.gsfTrack().isNull()) continue;
+	//	if(el.pt() < 7) continue;     
+	//	if(fabs(el.eta()) > 2.5) continue;
 	
 	int ielCand = 0;
 	for(edm::Ref<pat::PackedCandidateCollection> cand : el.associatedPackedPFCandidates()){	  
@@ -302,11 +302,11 @@ public:
 	
 	const pat::Muon & mu = (*muonHandle)[i];
 	
-	if(mu.innerTrack().isNull()) continue;
-	if(mu.pt() < 5) continue;
-	if(fabs(mu.eta()) > 2.4) continue;
-	if(!mu.isPFMuon()) continue;
-	if(!(mu.isTrackerMuon() || mu.isGlobalMuon())) continue;
+	//	if(mu.innerTrack().isNull()) continue;
+	//	if(mu.pt() < 5) continue;
+	//	if(fabs(mu.eta()) > 2.4) continue;
+	//	if(!mu.isPFMuon()) continue;
+	//	if(!(mu.isTrackerMuon() || mu.isGlobalMuon())) continue;
 	
 	mu_idx.push_back(i);
 	mu_lIVF_match.push_back(false);
@@ -424,8 +424,10 @@ public:
        }
      }
      
-     auto dispJetElectronTab = std::make_unique<nanoaod::FlatTable>(nElectronsSel, "DispJetElectron", false, false);
-     auto dispJetMuonTab = std::make_unique<nanoaod::FlatTable>(nMuonsSel, "DispJetMuon", false, false);
+     //     auto dispJetElectronTab = std::make_unique<nanoaod::FlatTable>(nElectronsSel, "DispJetElectron", false, false);
+     //     auto dispJetMuonTab = std::make_unique<nanoaod::FlatTable>(nMuonsSel, "DispJetMuon", false, false);
+     auto dispJetElectronTab = std::make_unique<nanoaod::FlatTable>(nElectronsSel, "Electron", true, true);
+     auto dispJetMuonTab = std::make_unique<nanoaod::FlatTable>(nMuonsSel, "Muon", true, true);
      
      dispJetElectronTab->addColumn<int>("idx", el_idx, "");
      dispJetElectronTab->addColumn<bool>("lIVF_match", el_lIVF_match, "");
@@ -455,7 +457,8 @@ public:
      dispJetElectronTab->addColumn<float>("3dIP", el_3dIP, "");
      dispJetElectronTab->addColumn<float>("3dIPSig", el_3dIPSig, "");
      
-     auto dispJetElectronVtxTab = std::make_unique<nanoaod::FlatTable>(el_IVF_x.size(), "DispJetElectronVtx", false, false);
+     //     auto dispJetElectronVtxTab = std::make_unique<nanoaod::FlatTable>(el_IVF_x.size(), "DispJetElectronVtx", false, false);
+     auto dispJetElectronVtxTab = std::make_unique<nanoaod::FlatTable>(el_IVF_x.size(), "ElectronVtx", false, false);
      dispJetElectronVtxTab->addColumn<int>("IVF_df", el_IVF_df, "");
      dispJetElectronVtxTab->addColumn<int>("IVF_ntracks", el_IVF_ntracks, "");
      dispJetElectronVtxTab->addColumn<int>("IVF_elid", el_IVF_elid, "");
@@ -476,7 +479,8 @@ public:
      for( unsigned int iv=0;iv<el_IVF_ntracks.size();iv++ ) {
 	nTracksElectron += std::min(el_IVF_ntracks[iv], ntrack_max);
      }
-     auto dispJetElectronTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksElectron, "DispJetElectronTrk", false, false);
+     //     auto dispJetElectronTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksElectron, "DispJetElectronTrk", false, false);
+     auto dispJetElectronTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksElectron, "ElectronTrk", false, false);
      dispJetElectronTrkTab->addColumn<int>("IVF_trackcharge", el_IVF_trackcharge, "");
      dispJetElectronTrkTab->addColumn<float>("IVF_trackpt", el_IVF_trackpt, "");
      dispJetElectronTrkTab->addColumn<float>("IVF_tracketa", el_IVF_tracketa, "");
@@ -514,7 +518,8 @@ public:
      dispJetMuonTab->addColumn<float>("3dIP", mu_3dIP, "");
      dispJetMuonTab->addColumn<float>("3dIPSig", mu_3dIPSig, "");
      
-     auto dispJetMuonVtxTab = std::make_unique<nanoaod::FlatTable>(mu_IVF_x.size(), "DispJetMuonVtx", false, false);
+     //     auto dispJetMuonVtxTab = std::make_unique<nanoaod::FlatTable>(mu_IVF_x.size(), "DispJetMuonVtx", false, false);
+     auto dispJetMuonVtxTab = std::make_unique<nanoaod::FlatTable>(mu_IVF_x.size(), "MuonVtx", false, false);
      dispJetMuonVtxTab->addColumn<int>("IVF_df", mu_IVF_df, "");
      dispJetMuonVtxTab->addColumn<int>("IVF_ntracks", mu_IVF_ntracks, "");
      dispJetMuonVtxTab->addColumn<int>("IVF_muid", mu_IVF_muid, "");
@@ -535,7 +540,8 @@ public:
      for( unsigned int iv=0;iv<mu_IVF_ntracks.size();iv++ ) {
 	nTracksMuon += std::min(mu_IVF_ntracks[iv], ntrack_max);
      }
-     auto dispJetMuonTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksMuon, "DispJetMuonTrk", false, false);
+     //     auto dispJetMuonTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksMuon, "DispJetMuonTrk", false, false);
+     auto dispJetMuonTrkTab = std::make_unique<nanoaod::FlatTable>(nTracksMuon, "MuonTrk", false, false);
      dispJetMuonTrkTab->addColumn<int>("IVF_trackcharge", mu_IVF_trackcharge, "");
      dispJetMuonTrkTab->addColumn<float>("IVF_trackpt", mu_IVF_trackpt, "");
      dispJetMuonTrkTab->addColumn<float>("IVF_tracketa", mu_IVF_tracketa, "");
